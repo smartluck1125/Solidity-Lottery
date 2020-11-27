@@ -52,7 +52,7 @@ contract Lottery is Ownable {
     /// @notice Remove a participant address to the lottery (Owner only)
     /// @param _participant The address of the participant to remove from the lottery
     function removeParticipant(address _participant) external onlyOwner {
-        require(_isLotteryParticipant[_participant] == true, "This address is not a known participant");
+        require(_isLotteryParticipant[_participant], "This address is not a known participant");
         _isLotteryParticipant[_participant] = false;
         amountParticipants--;
     }
@@ -60,6 +60,12 @@ contract Lottery is Ownable {
     //////////////////////////////////////
     ///  Internal & private functions  ///
     //////////////////////////////////////
+
+    /// @notice Modifier that checks if the sender is a lottery participant
+    modifier onlyParticipants() {
+        require(_isLotteryParticipant[msg.sender]);
+        _;
+    } 
 
     /// @notice Returns a random(ish) number between 1-1000 (including 1 and 1000)
     /// @return A uint between 1 and 1000 (including 1 and 1000)
