@@ -96,7 +96,9 @@ contract Lottery is Ownable {
             }
         }
         // Are there any winners?
-        if (winners.length > 0) {
+        // NOTE: Apparently winners.length is a really high number in Remix IDE when the array is empty
+        // So checking if the length of this array isn't bigger then the amount of participants fixes this issue
+        if (winners.length > 0 && winners.length <= amountParticipants) {
             // Calculate the prize that every winner receives
             uint prize = address(this).balance / winners.length;
             // Loop through the winners, transfer the prize and emit a event
