@@ -83,7 +83,7 @@ contract Lottery is Ownable {
         // Check if a month has been passed since the last draw
         require(lastLotteryDraw + cooldownTime <= block.timestamp, "The lottery can only be executed once a month");
         // Check if every participant has placed a bet
-        require(bettingEntries.length == amountParticipants && amountParticipants > 2, "Not every participant has placed a bet yet or there are not enough participants");
+        require(bettingEntries.length == amountParticipants && amountParticipants >= 2, "Not every participant has placed a bet yet or there are not enough participants");
         // Generate a random(ish) number
         uint winningNumber = getRandomNumber();
         // Create an array to push the winners into
