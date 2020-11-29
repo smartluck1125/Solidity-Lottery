@@ -12,7 +12,13 @@ contract Lottery is Ownable {
     uint bettingAmount = 0.1 ether;
     uint8 amountParticipants = 0; // The group consists of 5 friends, but who knows maybe they want to add more (up to 255)
 
+    struct BettingEntry {
+        address participant;
+        uint number;
+    }
+
     mapping(address => bool) private _isLotteryParticipant;
+    BettingEntry[] private bettingEntries;
 
     //////////////////////////////////////
     ///        Public functions        ///
@@ -29,6 +35,12 @@ contract Lottery is Ownable {
     /// @return The current pot balance in Wei
     function getPotBalance() public view returns (uint) {
         return address(this).balance;
+    }
+
+    /// @notice Set a bet on the given number
+    function setBet(uint _number) external payable onlyParticipants noExistingBet {
+        require(msg.value == bettingAmount, "The supplied betting amount is not the required amount");
+        bettingEntries.push(BettingEntry(msg.sender, _number));
     }
 
     //////////////////////////////////////
@@ -63,13 +75,30 @@ contract Lottery is Ownable {
 
     /// @notice Modifier that checks if the sender is a lottery participant
     modifier onlyParticipants() {
-        require(_isLotteryParticipant[msg.sender]);
+        require(_isLotteryParticipant[msg.sender], "You are not a lottery participant");
         _;
-    } 
+    }
+
+    /// @notice Modifier that checks if the sender didn't aleady make a bet
+    modifier noExistingBet() {
+        require(hasExistingBet(msg.sender) == false, "You already registered a bet for this round");
+        _;
+    }
+
+    /// @notice Check if an given address already has an existing bet placed
+    /// @return true if an existing bet is placed, false if not
+    function hasExistingBet(address _participant) private view returns (bool) {
+        for(uint i = 0; i < bettingEntries.length; i++) {
+            if (bettingEntries[i].participant == _participant) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /// @notice Returns a random(ish) number between 1-1000 (including 1 and 1000)
     /// @return A uint between 1 and 1000 (including 1 and 1000)
-    function getRandomNumber() internal returns (uint) {
+    function getRandomNumber() private returns (uint) {
         randNonce++;
         return (uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce))) % 1000) + 1;
     }
