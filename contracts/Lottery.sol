@@ -104,6 +104,7 @@ contract Lottery is Ownable {
             // Loop through the winners, transfer the prize and emit a event
             for (uint i = 0; i < winners.length; i++) {
                 payable(winners[i]).transfer(prize);
+                // Emit a round winner event for every winner and their corresponding prize
                 emit RoundWinner(winners[i], prize);
             }
         } else {
@@ -112,7 +113,7 @@ contract Lottery is Ownable {
         }
         // Start a new round
         startNewRound();
-        // TODO: Emit event to notify that a new round has started
+        // Emit event to notify that a new round has started
         emit NewRoundStarted(getCurrentRound());
     }
 
