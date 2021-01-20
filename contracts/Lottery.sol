@@ -48,6 +48,7 @@ contract Lottery is Ownable {
     /// @notice Set a bet on the given number
     function setBet(uint _number) external payable onlyParticipants noExistingBet {
         require(msg.value == bettingAmount, "The supplied betting amount is not the required amount");
+        require(_number >= 1 && _number <= 1000, "Chosen number must be between 1 - 1000");
         bettingEntries.push(BettingEntry(msg.sender, _number));
     }
 
