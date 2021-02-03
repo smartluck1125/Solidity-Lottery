@@ -1,1 +1,1 @@
-# SmartContracts
+# Solidity-Lottery
